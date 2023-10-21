@@ -42,18 +42,18 @@ public:
   NodeId id() const { return id_; }
 
   bool IsReadyToEnqueue() const {
-    printf("IsReadyToEnqueue called on %s state %d\n", id().c_str(),
-           GetState());
+    // printf("IsReadyToEnqueue called on %s state %d\n", id().c_str(),
+    // GetState());
     if (GetState() != NodeState::kNotInQueue) {
       return false;
     }
     for (Node *in_node : in_nodes_) {
       if (in_node->GetState() != NodeState::kComplete) {
-        printf("%s is not ready to enqueue\n", id().c_str());
+        // printf("%s is not ready to enqueue\n", id().c_str());
         return false;
       }
     }
-    printf("%s is ready to enqueue\n", id().c_str());
+    // printf("%s is ready to enqueue\n", id().c_str());
     return true;
   }
 
@@ -74,7 +74,7 @@ public:
 
   void AddNode(std::unique_ptr<Node> node) {
     NodeId id = node->id();
-    printf("node id %s is added\n", id.c_str());
+    // printf("node id %s is added\n", id.c_str());
     node_id_to_node_[id] = std::move(node);
   }
 
@@ -86,19 +86,19 @@ public:
 
     while (!AreAllNodesComplete()) {
       for (const auto &it : node_id_to_node_) {
-        printf("node_id_to_node_ it %s\n", it.second->id().c_str());
+        // printf("node_id_to_node_ it %s\n", it.second->id().c_str());
         if (it.second->IsReadyToEnqueue()) {
           {
             std::scoped_lock lock(nodes_queue_mu_);
             nodes_to_be_started_.push(it.second.get());
 
-            printf("enqueue %s\n", it.second->id().c_str());
+            // printf("enqueue %s\n", it.second->id().c_str());
             it.second->SetState(NodeState::kInqueue);
           }
         }
       }
-      // usleep(1);
       std::this_thread::yield();
+      usleep(1);
     }
   }
 
@@ -149,7 +149,7 @@ private:
       node->SetState(NodeState::kRunning);
       node->BlockingRun();
       node->SetState(NodeState::kComplete);
-      printf("%s is set to complete\n", node->id().c_str());
+      // printf("%s is set to complete\n", node->id().c_str());
     }
   }
 
