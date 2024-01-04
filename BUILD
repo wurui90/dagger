@@ -7,6 +7,7 @@ package(
 cc_library(
     name = "dagger",
     hdrs = ["dagger.h"],
+    srcs = ["dagger.cpp"],
 )
 
 cc_test(
